@@ -1,7 +1,7 @@
 
-/*Filip G³ogowski
+/*Filip GÅ‚ogowski
 Analiza bramkarzy 
-Program stworzony w celu analizy bramkarzy dostêpnych w grze fifa okreœlenie do jakiego wieku osi¹gaj¹ najwiêkszy rozwój*/
+Program stworzony w celu analizy bramkarzy dostÄ™pnych w grze fifa okreÅ›lenie do jakiego wieku osiÄ…gajÄ… najwiÄ™kszy rozwÃ³j*/
 
 
 LIBNAME fifa 'C:\Users\FIJIP\Desktop\SasProjekty';
@@ -11,9 +11,9 @@ PROC IMPORT datafile='C:\Users\FIJIP\Desktop\SasProjekty\Fifa19DataSet.csv'
 	dbms = CSV 
  ;
 run;
-/* Pozycje wyt³umaczone dla niewtajemniczonych
-bramkarz			GK	Goalkeeper 				bramkarze maj¹ puste wszystkie statystyki z ni¿ej wymienionych
-obroñcy				RB	Right Back
+/* Pozycje wytÅ‚umaczone dla niewtajemniczonych
+bramkarz			GK	Goalkeeper 				bramkarze majÄ… puste wszystkie statystyki z niÅ¼ej wymienionych
+obroÅ„cy				RB	Right Back
 					RCB Right Center Back
 					CB	Center Back
 					LCB Left Center Back
@@ -40,49 +40,49 @@ napastnicy			RW	Right Wing
 					ST	Striker
 					LS	Left Striker
 */
-/*wstêpna krótka analiza danych*/
+/*wstÄ™pna krÃ³tka analiza danych*/
 PROC CONTENTS data=fifa.rawdata position;
 run;
 
 PROC CONTENTS data=fifa.rawdata short;
 run;
 
-/* Z danych mo¿na siê dowiedzieæ statystyk na temat zawodników. Dziêki temu mo¿emy wybraæ najlepszy zespó³ albo najciekawszych m³odych zawodników.
-Na pewno trzeba usun¹æ pierwsz¹ kolumne gdy¿ zbêdnie wylicza zawodninków.
-Jako Cel ustalmy okreœlenie wieku kiedy bramkarze przestaj¹ siê rozwijaæ i osiagaj¹ szczyt mo¿liwoœci.
-Mo¿na usun¹æ kolumny Photo Flag  Club_logo gdy¿ zawieraj¹ tylko linki do zdjêæ niebêd¹cych obiektem zainteresowañ tego projektu.roz³¹cznoœci miêdzy zbiorami
+/* Z danych moÅ¼na siÄ™ dowiedzieÄ‡ statystyk na temat zawodnikÃ³w. DziÄ™ki temu moÅ¼emy wybraÄ‡ najlepszy zespÃ³Å‚ albo najciekawszych mÅ‚odych zawodnikÃ³w.
+Na pewno trzeba usunÄ…Ä‡ pierwszÄ… kolumne gdyÅ¼ zbÄ™dnie wylicza zawodninkÃ³w.
+Jako Cel ustalmy okreÅ›lenie wieku kiedy bramkarze przestajÄ… siÄ™ rozwijaÄ‡ i osiagajÄ… szczyt moÅ¼liwoÅ›ci.
+MoÅ¼na usunÄ…Ä‡ kolumny Photo Flag  Club_logo gdyÅ¼ zawierajÄ… tylko linki do zdjÄ™Ä‡ niebÄ™dÄ…cych obiektem zainteresowaÅ„ tego projektu.rozÅ‚Ä…cznoÅ›ci miÄ™dzy zbiorami
 */
 
 DATA Fifa.wszyscy;
 	set fifa.rawdata; 
 	Drop VAR1 Photo Flag Club_Logo Real_face Jersey_number Joined Loaned_from;
-RUN;/* dane bez zbêdnych kolumn*/
+RUN;/* dane bez zbÄ™dnych kolumn*/
 
-/*wybierzmy tylko bramkarzy. Ze wstêpnej analizy widaæ ¿e bramkarze maj¹ wartoœci na polach œredniej punktacji z pozycji w polu wartoœci NULL, np LS*/
+/*wybierzmy tylko bramkarzy. Ze wstÄ™pnej analizy widaÄ‡ Å¼e bramkarze majÄ… wartoÅ›ci na polach Å›redniej punktacji z pozycji w polu wartoÅ›ci NULL, np LS*/
 
 DATA Fifa.Bramkarze;
 	set fifa.wszyscy;
-	where LS is null;/*LS dla bramkarzy ma tak¹ postaæ*/
-	VALUE_Num=INPUT(compress(VALUE,'€M'),best9.)*1000000;
-	Wage_Num=INPUT(compress(wage,'€KM'),best9.)*1000;
-	WEIGHT_NUM=INPUT(compress(WEIGHT,'lbs€KM'),best9.);/*waga, wartoœæ i pensja zamieniamy na faktyczne wartoœci numeryczne*/;
-	DROP LS ST RS LW LF CF RF RW LAM CAM RAM LM LCM LDM CM RCM RM LWB CDM RDM RWB LB LCB CB RCB RB /*usuwamy punkty które i tak s¹ puste*/
+	where LS is null;/*LS dla bramkarzy ma takÄ… postaÄ‡*/
+	VALUE_Num=INPUT(compress(VALUE,'â‚¬M'),best9.)*1000000;
+	Wage_Num=INPUT(compress(wage,'â‚¬KM'),best9.)*1000;
+	WEIGHT_NUM=INPUT(compress(WEIGHT,'lbsâ‚¬KM'),best9.);/*waga, wartoÅ›Ä‡ i pensja zamieniamy na faktyczne wartoÅ›ci numeryczne*/;
+	DROP LS ST RS LW LF CF RF RW LAM CAM RAM LM LCM LDM CM RCM RM LWB CDM RDM RWB LB LCB CB RCB RB /*usuwamy punkty ktÃ³re i tak sÄ… puste*/
 		crossing finishing volleys dribbling curve ballcontrol standingtackle slidingtackle weak_Foot Skill_moves
-	/*atrybuty niekoniecznie potrzebne bramkarzowi, których usuniêcie mo¿e przyspieszaæ kompilacje wyników*/	;
+	/*atrybuty niekoniecznie potrzebne bramkarzowi, ktÃ³rych usuniÄ™cie moÅ¼e przyspieszaÄ‡ kompilacje wynikÃ³w*/	;
 RUN;
 
 PROC SORT data=FIFA.bramkarze;
 	by  Descending overall Descending potential VALUE_num;
 RUN;/*zawodnicy zostali posortowani*/
 
-libname library 'C:\Users\FIJIP\Desktop\SasProjekty';/*tworzenie biblioteki dla formatów*/
-PROC FORMAT library=library;/*format który okreœli jak doœwiadczenie s¹ zawodnicy*/
-	VALUE   poziom_reputacji 1='pocz¹tkuj¹cy'
+libname library 'C:\Users\FIJIP\Desktop\SasProjekty';/*tworzenie biblioteki dla formatÃ³w*/
+PROC FORMAT library=library;/*format ktÃ³ry okreÅ›li jak doÅ›wiadczenie sÄ… zawodnicy*/
+	VALUE   poziom_reputacji 1='poczÄ…tkujÄ…cy'
 							 2='amator'
 							 3='zawodowiec'
 							 4='ekspert'
 							 5='legenda';
-RUN;/*Zale¿nie od poziomu dajemy odpowiedni¹ opinie*/
+RUN;/*ZaleÅ¼nie od poziomu dajemy odpowiedniÄ… opinie*/
 
 DATA Fifa.bramkarze_reputacja;
 /*format value BEST12.*/;
@@ -94,27 +94,27 @@ RUN;
 
 PROC FREQ DATA=fifa.bramkarze_reputacja;
     TABLES poziom_reputacji;
-RUN;/*liczebnoœæ bramkarzy o okreœlonym poziomie reputacji*/
+RUN;/*liczebnoÅ›Ä‡ bramkarzy o okreÅ›lonym poziomie reputacji*/
 
 proc plot data=fifa.bramkarze_reputacja;
    plot poziom_reputacji*value_num='.' /	
          haxis=10000000 20000000 30000000 40000000 50000000
 			;
-   title 'Wykres wartoœci zawodnikow w zale¿noœci od reputacji';
+   title 'Wykres wartoÅ›ci zawodnikow w zaleÅ¼noÅ›ci od reputacji';
 run;
 
 DATA Fifa.potencjal_bramkarzy;
-	SET fifa.bramkarze;/*obliczamy jakie mo¿liwoœci rozwoju maj¹ jeszcze zawodnicy i przypisujemy opinie*/
+	SET fifa.bramkarze;/*obliczamy jakie moÅ¼liwoÅ›ci rozwoju majÄ… jeszcze zawodnicy i przypisujemy opinie*/
 	if POTENTIAL-OVERALL=0 then delete;
-	if POTENTIAL-OVERALL<10  then potential='ma³y potencja³';
-		else potential_opinion='wart uwagi';/*dzielimy zawodników na tych z mala mozliwoscia rozwoju i z du¿a*/
+	if POTENTIAL-OVERALL<10  then potential='maÅ‚y potencjaÅ‚';
+		else potential_opinion='wart uwagi';/*dzielimy zawodnikÃ³w na tych z mala mozliwoscia rozwoju i z duÅ¼a*/
 RUN;
 
 PROC PLOT DATA=fifa.potencjal_bramkarzy;
    PLOT overall*value_num='.' /	
         haxis=10000000 20000000 30000000 40000000 50000000
 			;
-   TITLE 'Wykres wartoœci zawodnikow w zale¿noœci od wartoœci potencja³u';
+   TITLE 'Wykres wartoÅ›ci zawodnikow w zaleÅ¼noÅ›ci od wartoÅ›ci potencjaÅ‚u';
 RUN;
 
 PROC SQL;
@@ -127,24 +127,30 @@ QUIT;
 proc sgplot data=fifa.srednie_pot;
 	histogram avg_overall;
 	histogram avg_potential;
-RUN;/*widaæ ¿e najwiêcej zawodników ma potencja³ by mieæ overall oko³o 85*/
+RUN;/*widaÄ‡ Å¼e najwiÄ™cej zawodnikÃ³w ma potencjaÅ‚ by mieÄ‡ overall okoÅ‚o 85*/
 
-/*obliczyliœmy œrednie, teraz zobaczmy jak wygl¹da to na wykresie*/
+/*obliczyliÅ›my Å›rednie, teraz zobaczmy jak wyglÄ…da to na wykresie*/
 
-PROC PLOT data=fifa.srednie_pot;/*liczymy œredni¹ overall i potential grupuj¹c zawodników wzglêdem wieku */
-	plot avg_overall*age='*'
-		 avg_potential*age='o'/ overlay box;
-		 title 'wykres potencja³u i osiagnieæ zale¿nie od wieku';
+%MACRO wykres(dane, x, y1, y2);
+PROC PLOT data=&dane;/*liczymy Å›redniÄ… overall i potential grupujÄ…c zawodnikÃ³w wzglÄ™dem wieku */
+	plot &y1*&xe='*'
+		 &y2*&xe='o'/ overlay box;
 RUN;/*brzydki wykres, drugi raz go nie skompiluje*/
+%MEND;
+%wykres1(fifa.srednie_pot, age, avg_overall, avg_potential);
 
-proc sgplot data=fifa.srednie_pot;
-	scatter y=avg_overall x=age; /*pierwszy wykres œredniej z potencjalu*/
-	scatter y=avg_potential x=age;/*drugi wykres œredniej z overall*/
-	 title 'wykres potencja³u i osiagnieæ zale¿nie od wieku';
-run;/*³adniejszy wykres i widaæ ¿e do 29 roku ¿ycia bramkarze osiagaj¹ najczeœciej swój szczyt mo¿liwoœci*/
 
-/*Widaæ zatem ¿e zawodnicy osi¹gaj¹ szczyt mo¿liwoœæi œrednio do 29 roku ¿ycia. Rozpoczynaj¹c zatem karieie jako zawodnik nie warto
-zaczynaæ jako tak "stara" osoba i trzeba siê liczyæ ¿e po osi¹gniêciu tego wieku nasz zawodnik bêdzie juz coraz gorszy w kolejnych sezonach*/
+%MACRO wykres2(dane, x, y1, y2);
+PROC SGPLOT DATA=&dane;
+	scatter y=&y1 x=&x; /*pierwszy wykres Å›redniej z potencjalu*/
+	scatter y=&y2 x=&x;/*drugi wykres Å›redniej z overall*/
+;
+RUN;/*Å‚adniejszy wykres i widaÄ‡ Å¼e do 29 roku Å¼ycia bramkarze osiagajÄ… najczeÅ›ciej swÃ³j szczyt moÅ¼liwoÅ›ci*/
+%MEND;
+%wykres2(fifa.srednie_pot, age, avg_overall, avg_potential);
+
+/*WidaÄ‡ zatem Å¼e zawodnicy osiÄ…gajÄ… szczyt moÅ¼liwoÅ›Ä‡i Å›rednio do 29 roku Å¼ycia. RozpoczynajÄ…c zatem karieie jako zawodnik nie warto
+zaczynaÄ‡ jako tak "stara" osoba i trzeba siÄ™ liczyÄ‡ Å¼e po osiÄ…gniÄ™ciu tego wieku nasz zawodnik bÄ™dzie juz coraz gorszy w kolejnych sezonach*/
 
 
 
